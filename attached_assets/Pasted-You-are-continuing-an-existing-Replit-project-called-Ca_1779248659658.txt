@@ -1,0 +1,584 @@
+You are continuing an existing Replit project called Canon Table Engine / Canon Companion.
+
+DO NOT START OVER.
+DO NOT MAKE A MOCKUP.
+DO NOT REMOVE THE CANON-SAFE SYSTEM.
+DO NOT ADD COPYRIGHTED OFFICIAL D&D TEXT, STAT BLOCKS, MAPS, ARTWORK, BOXED TEXT, OR PDFs.
+
+Your job is to take the current Replit 1 project and improve it into a genuinely usable official D&D 5e 2014 adventure runner / DM table companion.
+
+CURRENT PROJECT STATE
+
+The app appears to live mainly here:
+
+artifacts/canon-table-engine/
+
+Replit 1 already created:
+- React + TypeScript + Vite app
+- Canon-locked D&D 5e 2014 source reference system
+- campaign modes for Candlekeep Mysteries, Tales from the Yawning Portal, and Ravnica
+- character creation
+- character sheet
+- dice roller
+- combat tracker foundation
+- canon audit
+- save manager
+- sourcebook panel
+- DM notes
+- localStorage persistence
+- JSON export/import
+- docs including README, CANON_POLICY, ARCHITECTURE, QA_REPORT, HANDOFF_TO_NEXT_REPLIT, ROADMAP
+- PDF cleanup from attached_assets
+- typo fix from ravniaCrossoverEnabled to ravnicaCrossoverEnabled
+- DM node overrides
+- node editor foundation
+- required checks on adventure nodes
+
+Your task is now Phase 2 / Phase 3: make it much more playable.
+
+VERY IMPORTANT CLEANUP FIRST
+
+Inspect the repo before changing features.
+
+Check for:
+- .git history containing large PDF blobs
+- attached_assets PDFs
+- copied official D&D content
+- copied stat blocks
+- copied boxed text
+- official maps/art
+- broken mockup-sandbox or unused placeholder routes
+- duplicated project paths
+- incorrect Replit run command
+
+If the zip includes a .git directory with large binary history, create a safe cleanup plan:
+- Do not keep old PDF blobs in git history if possible.
+- If easiest, create a fresh clean git state after confirming the working tree has no PDFs.
+- Document what you did in docs/HANDOFF_TO_NEXT_REPLIT.md.
+
+Run:
+- pnpm install if needed
+- pnpm run typecheck
+- pnpm run build
+
+Fix all errors before adding features.
+
+CORE GOAL FOR REPLIT 2
+
+Make this app feel like something I can actually use to play/run official 5e adventures that I own.
+
+Because official adventure text and stat blocks cannot be shipped in the repo, create a strong private local DM prep system.
+
+The repo should stay copyright-safe.
+The user’s private browser storage may contain their own notes/page refs/mechanical entries from books they own.
+All private DM-entered data must be:
+- localOnly: true
+- enteredByUser: true
+- stored in localStorage
+- exportable/importable as private JSON
+- clearly marked as not safe to commit/share if it contains copyrighted material
+
+DO NOT preload paid-book stat blocks or copied adventure text.
+
+OFFICIAL SOURCE PRIORITY
+
+Keep this source priority:
+
+Tier 1 — Core 5e 2014
+- Player’s Handbook 2014
+- Dungeon Master’s Guide 2014
+- Monster Manual 2014
+
+Tier 2 — Forgotten Realms / Sword Coast
+- Sword Coast Adventurer’s Guide
+- Candlekeep Mysteries
+- Tales from the Yawning Portal
+
+Tier 3 — Official Expansion
+- Volo’s Guide to Monsters
+- Adventurers League adaptation guides
+
+Tier 4 — Setting Specific
+- Guildmasters’ Guide to Ravnica
+
+Rules:
+- PHB2014 is default for characters/rules.
+- MM2014 is default for monsters.
+- DMG2014 is default for magic items.
+- SCAG is Forgotten Realms/Sword Coast lore support.
+- CM is Candlekeep mode.
+- TYP is Yawning Portal mode.
+- VGM is optional expansion.
+- GGR is isolated to Ravnica mode unless explicit crossover mode is enabled.
+
+PHASE 2A — PRIVATE DM PREP MODE
+
+Build a proper “DM Prep” workflow.
+
+Add a page/tab called:
+
+DM Prep
+
+This should let the DM privately prepare official adventures node-by-node.
+
+For each adventure node, allow local editing of:
+
+- pageRef
+- chapter/section
+- keyed area number
+- scene title override
+- DM private note
+- player-safe summary
+- read-aloud/private text field, clearly marked local-only
+- linked NPCs
+- linked monsters
+- linked items/treasure
+- linked traps/hazards
+- skill checks/DCs
+- saving throws/DCs
+- encounter difficulty note
+- next-node links
+- completion state
+- ready-to-run toggle
+
+Warnings:
+Above any large text field, show:
+“Private prep data may contain material from books you own. It stays local in your browser. Do not commit or share exported DM data if it contains copyrighted text.”
+
+Important:
+These prep overrides must not modify source files by default.
+They must save into session.nodeOverrides/localStorage.
+
+PHASE 2B — RUN SESSION MODE
+
+Improve the existing Play/Adventure Runner tab into a proper “Run Session” mode.
+
+The Run Session screen should show:
+
+Left panel:
+- party characters
+- HP quick controls
+- AC
+- passive Perception
+- conditions
+- short rest / long rest
+- damage / heal quick input
+
+Centre panel:
+- current adventure
+- current node
+- page reference
+- keyed area
+- DM private note
+- player-safe summary
+- required checks
+- saving throws
+- linked NPCs
+- linked monsters
+- linked treasure
+- available choices
+- mark complete
+- advance to next node
+- start encounter button
+
+Right panel:
+- dice roller
+- session log
+- canon warnings
+- quick source references
+- DM notes
+
+Make the session flow actually usable:
+1. Choose campaign mode
+2. Choose adventure
+3. Create/import character
+4. Open DM Prep if node refs are missing
+5. Run the current node
+6. Roll checks
+7. Start combat if needed
+8. Mark node complete
+9. Advance to next node
+10. Export save
+
+PHASE 2C — ADVENTURE SKELETON EXPANSION
+
+Expand the adventure skeletons in a copyright-safe way.
+
+Do not copy official room text.
+
+For Candlekeep:
+- Keep The Joy of Extradimensional Spaces
+- Keep Mazfroth’s Mighty Digressions
+- Add placeholder skeletons for more Candlekeep adventures if time allows
+
+For Tales from the Yawning Portal:
+- Keep The Sunless Citadel
+- Add structural placeholder skeletons for:
+  - The Forge of Fury
+  - The Hidden Shrine of Tamoachan
+  - White Plume Mountain
+  - Dead in Thay
+  - Against the Giants
+  - Tomb of Horrors
+
+Each skeleton should have:
+- adventure title
+- sourceBook
+- sourceId
+- starting level
+- recommended characters
+- nodes with blank pageRefs
+- broad structural node labels only, such as:
+  - Introduction / Hooks
+  - Starting Settlement
+  - Dungeon Entrance
+  - First Exploration Section
+  - Major Encounter Section
+  - Treasure / Discovery
+  - Final Encounter
+  - Aftermath
+
+Do not reproduce official contents.
+Do not invent replacements.
+Keep it as a prep scaffold for books the user owns.
+
+PHASE 2D — SOURCEBOOK DATA ENTRY UPGRADE
+
+Improve Sourcebook Panel / Sourcebook Data Entry.
+
+Add local-only forms for:
+
+1. Monster Combat Profile
+Fields:
+- name
+- sourceBook
+- sourceId
+- pageRef
+- AC
+- max HP
+- current HP
+- initiative modifier
+- speed note
+- attack bonus
+- damage formula
+- saving throw bonuses
+- condition notes
+- traits/actions short private notes
+- CR
+- XP
+- localOnly
+- enteredByUser
+
+2. NPC Reference
+Fields:
+- name
+- sourceBook
+- sourceId
+- pageRef
+- role
+- attitude
+- private notes
+- linked node IDs
+
+3. Item / Treasure Reference
+Fields:
+- name
+- sourceBook
+- sourceId
+- pageRef
+- rarity
+- item type
+- assigned character
+- private notes
+
+4. Spell Reference
+Fields:
+- name
+- sourceBook
+- sourceId
+- pageRef
+- level
+- school
+- private notes
+
+5. Trap / Hazard Reference
+Fields:
+- name
+- sourceBook
+- sourceId
+- pageRef
+- trigger note
+- DC
+- save/check type
+- damage formula
+- private notes
+
+Every entry must require:
+- sourceBook
+- sourceId
+- pageRef
+- localOnly: true
+- enteredByUser: true
+
+PHASE 3 — COMBAT POLISH
+
+Make combat actually useful at the table.
+
+Combat setup:
+- choose party members
+- add local monsters
+- quantity selector
+- manual HP override
+- roll initiative
+- manually edit initiative
+- start combat
+
+Combat screen:
+- round number
+- active turn
+- initiative order
+- HP controls for each combatant
+- AC
+- conditions
+- concentration toggle
+- death saves for player characters
+- attack roll
+- damage roll
+- saving throw roll
+- ability check roll
+- apply damage
+- apply healing
+- next turn
+- end combat
+- export combat log
+
+Combat log should show clear lines like:
+Attack: d20 14 + 5 = 19 vs AC 15 — Hit.
+Damage: 1d8 [6] + 3 = 9.
+Saving Throw: d20 11 + 2 = 13 vs DC 14 — Failure.
+
+Do not invent monster traits.
+If the monster has local DM notes, show them as private notes with source page reference.
+
+PHASE 4 — SAVE / EXPORT / IMPORT HARDENING
+
+Improve portability between Replit accounts.
+
+Save Manager should support:
+- export full session JSON
+- import full session JSON
+- export DM prep data JSON
+- import DM prep data JSON
+- export character JSON
+- import character JSON
+- export combat log
+- export session summary markdown
+- reset session with confirmation
+- autosave indicator
+- last saved timestamp
+- schema version
+- import validation with readable errors
+
+Add clear labels:
+- “Safe to share”
+- “Private local data — do not share if it contains copied book material”
+
+Add docs section:
+“How to move from Replit 1 to Replit 2 to Replit 3.”
+
+PHASE 5 — CANON AUDIT UPGRADE
+
+Improve Canon Audit into a serious dashboard.
+
+It should show:
+- Canon Health Score
+- Missing Page References
+- Missing Source IDs
+- Local-only Entries
+- Cross-setting Warnings
+- Possible Copyright Risk
+- Invalid Homebrew
+- Adventure Readiness
+- Session Readiness
+
+Add grouped sections:
+- Adventure Nodes
+- Node Overrides
+- Local Monsters
+- NPCs
+- Items/Treasure
+- Spells
+- Traps/Hazards
+- Characters
+- Campaign Mode Settings
+
+Copyright-risk heuristic:
+- flag any public source file field over 500 characters
+- flag any local data field over 1,500 characters as “private data — export carefully”
+- flag official-looking copied text if stored in source files
+- flag PDFs anywhere in repo
+
+PHASE 6 — CHARACTER CREATION IMPROVEMENT
+
+Improve PHB2014 character creation.
+
+Keep it copyright-safe.
+
+Add or improve:
+- all PHB base races if easy
+- all PHB base classes if easy
+- PHB backgrounds
+- standard array assignment by drag/drop or select
+- point buy validation
+- manual entry warning
+- skill proficiency selection
+- saving throw prof display
+- hit point calculation
+- passive Perception
+- spell slot tracking for spellcasters
+- prepared spell reference list
+- equipment reference list
+- export/import character JSON
+
+Do not copy full PHB race/class/background/spell text.
+Use source reference chips and short safe summaries.
+
+PHASE 7 — SESSION SUMMARY
+
+Add a useful “Session Summary” feature.
+
+Generate a markdown summary from local session state:
+- campaign mode
+- adventure
+- date/time
+- party members
+- completed nodes
+- current node
+- major rolls
+- combat outcomes
+- treasure found
+- NPCs encountered
+- unresolved hooks
+- next session starting point
+- canon warnings still unresolved
+
+Export as:
+- markdown file
+- JSON backup
+
+PHASE 8 — UI POLISH
+
+Improve polish but keep it fast.
+
+Style:
+- dark parchment/candlelit
+- readable
+- clear layout
+- high contrast
+- responsive
+- tablet/laptop friendly
+
+Add:
+- cleaner tabs/sidebar
+- better empty states
+- source chips
+- status badges
+- warning banners
+- progress bars
+- session readiness indicator
+- small dice animation if simple
+- footer disclaimer:
+  “Unofficial reference companion. Not affiliated with or endorsed by Wizards of the Coast. Use with sourcebooks you own.”
+
+No official D&D logos.
+No Wizards artwork.
+No copied book styling.
+
+DOCUMENTATION UPDATE REQUIREMENTS
+
+Update/create:
+
+README.md
+- current app status
+- how to run
+- where the real app lives
+- what Replit 2 improved
+- what is safe to commit
+- what must remain local-only
+- how to move to next Replit account
+
+docs/QA_REPORT.md
+- commands run
+- typecheck result
+- build result
+- manual tests
+- files changed
+- known issues
+
+docs/HANDOFF_TO_NEXT_REPLIT.md
+- current state after Replit 2
+- what works
+- what does not yet work
+- exact next best task for Replit 3
+- import/export instructions
+
+docs/CANON_POLICY.md
+- reinforce no PDFs/no copied official text/no stat blocks
+- explain private DM prep data
+
+docs/ROADMAP.md
+- update completed and remaining phases
+
+TESTING REQUIREMENTS
+
+Before final response, run:
+
+pnpm run typecheck
+pnpm run build
+
+Also manually test:
+- app boots
+- campaign selection
+- character creation
+- choose Candlekeep adventure
+- choose Yawning Portal adventure
+- edit a node in DM Prep
+- save node override
+- run session view shows override
+- roll a check
+- create local monster
+- start combat with local monster
+- attack/damage flow works
+- export full session
+- import full session
+- export DM prep data
+- import DM prep data
+- Canon Audit flags missing page refs
+- no PDFs remain in working tree
+
+FINAL RESPONSE FORMAT
+
+At the end, report:
+
+1. What you changed
+2. What files changed
+3. Whether typecheck passed
+4. Whether build passed
+5. Whether copyright cleanup passed
+6. How to run the app
+7. How to export/import for the next Replit account
+8. What Replit 3 should do next
+
+PRIORITY ORDER
+
+1. Confirm clean build/typecheck
+2. Clean any remaining copyright/git/PDF risk
+3. Improve DM Prep mode
+4. Improve Run Session mode
+5. Improve combat
+6. Improve save/export/import
+7. Improve Canon Audit
+8. Improve docs
+9. Polish UI
+
+Now inspect the project and continue from Replit 1.
