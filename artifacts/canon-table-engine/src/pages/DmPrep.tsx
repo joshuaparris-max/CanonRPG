@@ -3,6 +3,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useSession } from "@/hooks/useSession";
 import { ADVENTURES, getAdventure, type AdventureNode } from "@/data/adventureSkeletons";
 import type { NodeOverride } from "@/types";
+import { AutoFillFromPdf } from "@/components/dm-prep/AutoFillFromPdf";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -282,6 +283,8 @@ export default function DmPrep() {
                 data-testid="textarea-player-summary"
               />
             </div>
+
+            <AutoFillFromPdf adventure={adventure} node={selectedNode} override={override} onApply={updateOverride} />
 
             <div>
               <Label className="text-xs">DM Private Note</Label>

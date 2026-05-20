@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { deleteImportedPdf } from "@/game/pdfStorage";
 import type { Monster, NPC, Item, Spell, Trap } from "@/types";
 import { SOURCE_BOOKS } from "@/data/sourceBooks";
 import { MAGIC_SCHOOLS, ITEM_RARITIES, NPC_ATTITUDES } from "@/data/characterDefaults";
@@ -12,6 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SourceChip } from "@/components/SourceChip";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, AlertTriangle, Lock } from "lucide-react";
+import { PdfImportPanel } from "@/components/sourcebook/PdfImportPanel";
+import type { ImportedPdfSource } from "@/game/types";
 
 interface SourcebookStore {
   monsters: Monster[];
@@ -52,9 +55,21 @@ function PrivateBadge() {
 export default function Sourcebook() {
   const [store, setStore] = useLocalStorage<SourcebookStore>("cte_sourcebook", DEFAULT_STORE);
   const [characters] = useLocalStorage<{ id: string; name: string }[]>("cte_characters", []);
+  const [pdfImports, setPdfImports] = useLocalStorage<ImportedPdfSource[]>("cte_pdf_imports", []);
 
   const updateList = <K extends keyof SourcebookStore>(key: K, items: SourcebookStore[K]) => {
     setStore((prev) => ({ ...prev, [key]: items }));
+  };
+
+  const handleImport = (imported: ImportedPdfSource) => {
+    setPdfImports((prev) => [...prev, imported]);
+  };
+
+  const handleDeleteImport = async (id: string) => {
+    await deleteImportedPdf(id).catch(() => {
+      /* ignore stale IDB state */
+    });
+    setPdfImports((prev) => prev.filter((item) => item.id !== id));
   };
 
   return (
@@ -64,6 +79,8 @@ export default function Sourcebook() {
         Enter stats, NPCs, items, spells, and traps from books you own. All entries are private and local-only.
         Source book and page reference are required fields.
       </p>
+
+      <PdfImportPanel imports={pdfImports} onImport={handleImport} onDelete={handleDeleteImport} />
 
       <Tabs defaultValue="monsters">
         <TabsList>

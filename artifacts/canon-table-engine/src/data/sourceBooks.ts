@@ -7,6 +7,7 @@ export type SourceBookId =
   | "TFTYP"
   | "VGM"
   | "AL"
+  | "AL_GUIDE"
   | "GGR";
 
 export interface SourceBook {
@@ -73,6 +74,13 @@ export const SOURCE_BOOKS: SourceBook[] = [
     shortTitle: "AL",
     tier: 3,
     description: "Adventurers League adaptation guides.",
+  },
+  {
+    id: "AL_GUIDE",
+    title: "Adventurers League Guide",
+    shortTitle: "AL_GUIDE",
+    tier: 3,
+    description: "Official Adventurers League sourcebook references.",
   },
   {
     id: "GGR",
