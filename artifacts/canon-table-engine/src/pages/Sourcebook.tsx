@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import type { Monster, NPC, Item, Spell, Trap } from "@/types";
+import type { ImportedPdf, Monster, NPC, Item, Spell, Trap } from "@/types";
 import { SOURCE_BOOKS } from "@/data/sourceBooks";
 import { MAGIC_SCHOOLS, ITEM_RARITIES, NPC_ATTITUDES } from "@/data/characterDefaults";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SourceChip } from "@/components/SourceChip";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, AlertTriangle, Lock } from "lucide-react";
+import { Plus, Trash2, AlertTriangle, Lock, BookOpen } from "lucide-react";
+import { parsePdfFile } from "@/lib/pdfImport";
 
 interface SourcebookStore {
   monsters: Monster[];
@@ -22,6 +23,7 @@ interface SourcebookStore {
 }
 
 const DEFAULT_STORE: SourcebookStore = { monsters: [], npcs: [], items: [], spells: [], traps: [] };
+const DEFAULT_PDF_STORE: ImportedPdf[] = [];
 
 const PRIVATE_WARNING = "Private prep data may contain material from books you own. It stays local in your browser. Do not commit or share exported DM data if it contains copyrighted text.";
 
@@ -52,9 +54,56 @@ function PrivateBadge() {
 export default function Sourcebook() {
   const [store, setStore] = useLocalStorage<SourcebookStore>("cte_sourcebook", DEFAULT_STORE);
   const [characters] = useLocalStorage<{ id: string; name: string }[]>("cte_characters", []);
+  const [pdfLibrary, setPdfLibrary] = useLocalStorage<ImportedPdf[]>("cte_pdf_library", DEFAULT_PDF_STORE);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfSourceBook, setPdfSourceBook] = useState("");
+  const [pdfFeedback, setPdfFeedback] = useState<{ error?: string; success?: string }>({});
+  const [pdfSearch, setPdfSearch] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateList = <K extends keyof SourcebookStore>(key: K, items: SourcebookStore[K]) => {
     setStore((prev) => ({ ...prev, [key]: items }));
+  };
+
+  const pdfSearchResults = pdfSearch.trim()
+    ? pdfLibrary
+        .flatMap((pdf) =>
+          pdf.indexEntries
+            .filter((entry) =>
+              entry.label.toLowerCase().includes(pdfSearch.toLowerCase()) || entry.excerpt.toLowerCase().includes(pdfSearch.toLowerCase())
+            )
+            .slice(0, 5)
+            .map((entry) => ({ ...entry, pdfTitle: pdf.title, sourceBook: pdf.sourceBook }))
+        )
+        .slice(0, 12)
+    : [];
+
+  const handlePdfFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    setPdfFile(file);
+    setPdfFeedback({});
+  };
+
+  const handleImportPdf = async () => {
+    if (!pdfFile || !pdfSourceBook) {
+      setPdfFeedback({ error: "Select a PDF file and associated source book before importing." });
+      return;
+    }
+
+    try {
+      const imported = await parsePdfFile(pdfFile, pdfSourceBook);
+      setPdfLibrary((prev) => [...prev.filter((pdf) => pdf.fileHash !== imported.fileHash), imported]);
+      setPdfFile(null);
+      setPdfSourceBook("");
+      setPdfFeedback({ success: `Imported ${imported.fileName} (${imported.pageCount} pages).` });
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (error) {
+      setPdfFeedback({ error: error instanceof Error ? error.message : "PDF import failed." });
+    }
+  };
+
+  const removePdf = (id: string) => {
+    setPdfLibrary(pdfLibrary.filter((pdf) => pdf.id !== id));
   };
 
   return (
@@ -71,6 +120,7 @@ export default function Sourcebook() {
           <TabsTrigger value="npcs">NPCs ({store.npcs.length})</TabsTrigger>
           <TabsTrigger value="items">Items ({store.items.length})</TabsTrigger>
           <TabsTrigger value="spells">Spells ({store.spells.length})</TabsTrigger>
+          <TabsTrigger value="pdf-library">PDF Library ({pdfLibrary.length})</TabsTrigger>
           <TabsTrigger value="traps">Traps ({store.traps.length})</TabsTrigger>
         </TabsList>
 
@@ -85,6 +135,100 @@ export default function Sourcebook() {
         </TabsContent>
         <TabsContent value="spells" className="mt-4">
           <SpellTab spells={store.spells} onChange={(s) => updateList("spells", s)} />
+        </TabsContent>
+        <TabsContent value="pdf-library" className="mt-4">
+          <div className="space-y-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+              <div>
+                <h2 className="font-serif text-base">Sourcebook PDF Library</h2>
+                <p className="text-xs text-muted-foreground">Import official PDFs locally, keep the data private, and use indexed page suggestions for prep.</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                <BookOpen size={13} className="mr-1" />Import PDF
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="md:col-span-2 space-y-2">
+                <div>
+                  <Label className="text-xs">Source Book *</Label>
+                  <SourceBookSelect value={pdfSourceBook} onChange={(v) => setPdfSourceBook(v)} />
+                </div>
+                <div>
+                  <Label className="text-xs">PDF File *</Label>
+                  <Input type="file" accept=".pdf" className="h-9 text-xs" onChange={handlePdfFileChange} ref={fileInputRef} />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Button size="sm" onClick={handleImportPdf} disabled={!pdfFile || !pdfSourceBook}>
+                  Import locally
+                </Button>
+                {pdfFeedback.error && <p className="text-xs text-destructive">{pdfFeedback.error}</p>}
+                {pdfFeedback.success && <p className="text-xs text-green-300">{pdfFeedback.success}</p>}
+              </div>
+            </div>
+
+            <div className="rounded border border-border p-3 bg-card">
+              <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                <span>Imported PDFs</span>
+                <span>{pdfLibrary.length} file{pdfLibrary.length === 1 ? "" : "s"}</span>
+              </div>
+              {pdfLibrary.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No PDFs imported yet.</p>
+              ) : (
+                <div className="space-y-2">
+                  {pdfLibrary.map((pdf) => (
+                    <div key={pdf.id} className="rounded border border-border p-3 bg-surface">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="font-medium">{pdf.title}</span>
+                        <Badge className="text-[10px] uppercase">{pdf.indexedStatus}</Badge>
+                      </div>
+                      <div className="flex gap-2 flex-wrap text-xs text-muted-foreground mt-1">
+                        <span>{pdf.fileName}</span>
+                        <span>{pdf.pageCount} pages</span>
+                        <span>{new Date(pdf.lastIndexedAt).toLocaleDateString()}</span>
+                      </div>
+                      <div className="mt-2 flex items-center gap-2">
+                        <Button size="icon" variant="outline" onClick={() => removePdf(pdf.id)}>
+                          <Trash2 size={14} />
+                        </Button>
+                        <span className="text-xs text-muted-foreground">Imported from {pdf.sourceBook}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="rounded border border-border p-3 bg-card">
+              <div className="text-sm font-semibold">PDF Index Search</div>
+              <p className="text-xs text-muted-foreground mb-2">Search indexed PDF headings and excerpts to find candidate pages for sourcebook and DM Prep.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                <Input
+                  className="h-9 text-xs"
+                  placeholder="Search PDF index..."
+                  value={pdfSearch}
+                  onChange={(e) => setPdfSearch(e.target.value)}
+                />
+              </div>
+              {pdfSearchResults.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No matches yet. Search with a keyword like "monster", "spell", or an NPC name.</p>
+              ) : (
+                <div className="space-y-2 text-xs">
+                  {pdfSearchResults.map((entry) => (
+                    <div key={entry.id} className="rounded border border-border p-3 bg-surface">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium">{entry.pdfTitle}</span>
+                        <Badge className="text-[10px] uppercase">{entry.kind}</Badge>
+                      </div>
+                      <div className="text-muted-foreground text-[11px]">Page {entry.pageNumber} — {entry.sourceBook}</div>
+                      <div className="mt-2 text-xs">{entry.excerpt}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </TabsContent>
         <TabsContent value="traps" className="mt-4">
           <TrapTab traps={store.traps} onChange={(t) => updateList("traps", t)} />

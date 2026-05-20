@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useSession } from "@/hooks/useSession";
 import { ADVENTURES, getAdventure, type AdventureNode } from "@/data/adventureSkeletons";
-import type { NodeOverride } from "@/types";
+import type { NodeOverride, ImportedPdf } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -104,6 +104,8 @@ export default function DmPrep() {
     "cte_node_overrides",
     {}
   );
+  const [pdfLibrary] = useLocalStorage<ImportedPdf[]>("cte_pdf_library", []);
+  const [pdfSearchTerm, setPdfSearchTerm] = useState("");
   const [selectedAdventureId, setSelectedAdventureId] = useState(session.adventureId || "");
   const [selectedNodeId, setSelectedNodeId] = useState(session.currentNodeId || "");
   const [saved, setSaved] = useState(false);
@@ -113,6 +115,20 @@ export default function DmPrep() {
   const override = selectedNode
     ? nodeOverrides[selectedNodeId] ?? defaultOverride(selectedNode)
     : null;
+
+  const pdfSuggestions = pdfSearchTerm.trim()
+    ? pdfLibrary
+        .flatMap((pdf) =>
+          pdf.indexEntries
+            .filter((entry) =>
+              entry.label.toLowerCase().includes(pdfSearchTerm.toLowerCase()) ||
+              entry.excerpt.toLowerCase().includes(pdfSearchTerm.toLowerCase())
+            )
+            .slice(0, 5)
+            .map((entry) => ({ ...entry, pdfTitle: pdf.title, pdfSourceBook: pdf.sourceBook }))
+        )
+        .slice(0, 10)
+    : [];
 
   const updateOverride = (updates: Partial<NodeOverride>) => {
     if (!selectedNodeId || !selectedNode) return;
@@ -264,6 +280,47 @@ export default function DmPrep() {
                 value={override.sceneTitle}
                 onChange={(e) => updateOverride({ sceneTitle: e.target.value })}
               />
+            </div>
+
+            <div className="rounded border border-border p-3 bg-card space-y-3">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <div className="text-xs font-semibold">PDF Auto-Fill Suggestions</div>
+                  <p className="text-xs text-muted-foreground">Search imported PDF index entries and apply candidate page refs to this node.</p>
+                </div>
+                <Input
+                  className="h-8 text-xs max-w-sm"
+                  placeholder="Search PDF index..."
+                  value={pdfSearchTerm}
+                  onChange={(e) => setPdfSearchTerm(e.target.value)}
+                />
+              </div>
+              {pdfSuggestions.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No PDF suggestions match yet. Search by keyword, NPC name, monster type, or section title.</p>
+              ) : (
+                <div className="space-y-2">
+                  {pdfSuggestions.map((entry) => (
+                    <div key={entry.id} className="rounded border border-border p-3 bg-surface">
+                      <div className="flex items-center justify-between gap-2">
+                        <div>
+                          <div className="text-xs font-medium">{entry.pdfTitle}</div>
+                          <div className="text-[11px] text-muted-foreground">
+                            Page {entry.pageNumber} · {entry.pdfSourceBook} · {entry.kind}
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateOverride({ pageRef: String(entry.pageNumber), keyedArea: entry.label.slice(0, 40) })}
+                        >
+                          Apply
+                        </Button>
+                      </div>
+                      <div className="mt-2 text-xs text-muted-foreground">{entry.excerpt}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="bg-amber-950/40 border border-amber-800/50 rounded p-3 text-xs text-amber-300 flex gap-2">

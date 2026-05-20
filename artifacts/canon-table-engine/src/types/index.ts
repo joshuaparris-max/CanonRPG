@@ -118,6 +118,30 @@ export interface Trap extends SourcebookEntry {
   privateNotes: string;
 }
 
+export interface PdfIndexEntry {
+  id: string;
+  pageNumber: number;
+  excerpt: string;
+  label: string;
+  kind: "chapter" | "section" | "npc" | "monster" | "item" | "spell" | "trap" | "other";
+}
+
+export interface ImportedPdf {
+  id: string;
+  fileName: string;
+  fileHash: string;
+  sourceBook: string;
+  importDate: string;
+  pageCount: number;
+  title: string;
+  detectedTitle: string;
+  detectedToc: string[];
+  pdfPageOffset: number | null;
+  indexedStatus: "pending" | "indexed" | "failed";
+  lastIndexedAt: string;
+  indexEntries: PdfIndexEntry[];
+}
+
 export interface Combatant {
   id: string;
   name: string;

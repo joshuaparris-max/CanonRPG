@@ -1,6 +1,6 @@
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useSession } from "@/hooks/useSession";
-import type { Character, NodeOverride } from "@/types";
+import type { Character, NodeOverride, ImportedPdf } from "@/types";
 import type { Monster, NPC, Item, Spell, Trap } from "@/types";
 import { ADVENTURES, getAdventure } from "@/data/adventureSkeletons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,7 +50,11 @@ export default function CanonAudit() {
   const [characters] = useLocalStorage<Character[]>("cte_characters", []);
   const [nodeOverrides] = useLocalStorage<Record<string, NodeOverride>>("cte_node_overrides", {});
   const [sourcebook] = useLocalStorage<SourcebookStore>("cte_sourcebook", { monsters: [], npcs: [], items: [], spells: [], traps: [] });
+  const [pdfLibrary] = useLocalStorage<ImportedPdf[]>("cte_pdf_library", []);
   const [ravnicaCrossover] = useLocalStorage("cte_ravnica_crossover", false);
+
+  const pdfIndexCount = pdfLibrary.reduce((total, pdf) => total + (pdf.indexEntries?.length ?? 0), 0);
+  const hasImportedPdfLibrary = pdfLibrary.length > 0;
 
   const currentAdventure = getAdventure(session.adventureId);
 
@@ -136,6 +140,29 @@ export default function CanonAudit() {
           )}
         </CardContent>
       </Card>
+
+      {hasImportedPdfLibrary && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-serif text-base">Imported PDF Library Audit</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-xs text-muted-foreground">
+            <div className="flex items-center justify-between gap-2">
+              <span>{pdfLibrary.length} imported PDF file{pdfLibrary.length === 1 ? "" : "s"}</span>
+              <Badge className="text-[10px] uppercase">Private</Badge>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-[11px]">
+              <div>Index entries</div>
+              <div className="font-mono">{pdfIndexCount}</div>
+              <div>Latest imported</div>
+              <div className="font-mono">{new Date(pdfLibrary[0].lastIndexedAt).toLocaleDateString()}</div>
+            </div>
+            <div className="text-[11px] text-amber-300">
+              Imported PDFs are private and local-only. Do not export or commit PDFs or extracted text unless you intentionally store that export.
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Accordion type="multiple" defaultValue={["nodes", "characters"]}>
         <AccordionItem value="nodes">

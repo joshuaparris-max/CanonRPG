@@ -1,10 +1,12 @@
 import { useState, useRef } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useSession } from "@/hooks/useSession";
-import type { Character, NodeOverride, CombatState } from "@/types";
+import type { Character, NodeOverride, CombatState, ImportedPdf } from "@/types";
 import {
   exportFullSession,
   exportDmPrep,
+  exportSourcebookReferences,
+  exportPdfLibrary,
   exportCharacters,
   exportCombatLog,
   validateImport,
@@ -74,6 +76,7 @@ export default function SaveManager() {
   const [characters, setCharacters] = useLocalStorage<Character[]>("cte_characters", []);
   const [nodeOverrides, setNodeOverrides] = useLocalStorage<Record<string, NodeOverride>>("cte_node_overrides", {});
   const [sourcebook, setSourcebook] = useLocalStorage<SourcebookStore>("cte_sourcebook", DEFAULT_SOURCEBOOK);
+  const [pdfLibrary] = useLocalStorage<ImportedPdf[]>("cte_pdf_library", []);
   const [combat] = useLocalStorage<CombatState>("cte_combat", DEFAULT_COMBAT);
 
   const [feedback, setFeedback] = useState<{ id: string; error?: string; success?: string }>({ id: "" });
@@ -182,6 +185,32 @@ export default function SaveManager() {
       onImport: () => charsRef.current?.click(),
       importRef: charsRef,
       onImportChange: handleImportChars,
+    },
+    {
+      id: "sourcebook-references",
+      title: "Sourcebook References",
+      description: "Safe export of source references without private notes.",
+      badge: <SafeBadge />,
+      onExport: () => {
+        const data = exportSourcebookReferences(sourcebook as any);
+        downloadFile(data, `cte-sourcebook-references-${Date.now()}.json`);
+      },
+      onImport: undefined,
+      importRef: undefined,
+      onImportChange: undefined,
+    },
+    {
+      id: "pdf-library",
+      title: "PDF Library",
+      description: "Imported PDF metadata and index entries. Private only.",
+      badge: <PrivateBadge />,
+      onExport: () => {
+        const data = exportPdfLibrary(pdfLibrary);
+        downloadFile(data, `cte-pdf-library-${Date.now()}.json`);
+      },
+      onImport: undefined,
+      importRef: undefined,
+      onImportChange: undefined,
     },
     {
       id: "combatlog",

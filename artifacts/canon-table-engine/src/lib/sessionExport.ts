@@ -1,5 +1,5 @@
 import type { Character, SessionState, NodeOverride, CombatState } from "@/types";
-import type { Monster, NPC, Item, Spell, Trap } from "@/types";
+import type { Monster, NPC, Item, Spell, Trap, ImportedPdf } from "@/types";
 
 export interface SourcebookData {
   monsters: Monster[];
@@ -7,6 +7,26 @@ export interface SourcebookData {
   items: Item[];
   spells: Spell[];
   traps: Trap[];
+}
+
+export interface SourcebookReference {
+  name: string;
+  sourceBook: string;
+  sourceId: string;
+  pageRef: string;
+}
+
+export interface PdfLibraryExport {
+  id: string;
+  fileName: string;
+  fileHash: string;
+  sourceBook: string;
+  importDate: string;
+  pageCount: number;
+  title: string;
+  indexedStatus: string;
+  lastIndexedAt: string;
+  indexEntries: ImportedPdf["indexEntries"];
 }
 
 export interface FullExport {
@@ -58,6 +78,33 @@ export function exportDmPrep(
     sourcebook,
   };
   return JSON.stringify(data, null, 2);
+}
+
+export function exportSourcebookReferences(sourcebook: SourcebookData): string {
+  const references = {
+    monsters: sourcebook.monsters.map(({ name, sourceBook, sourceId, pageRef }) => ({ name, sourceBook, sourceId, pageRef })),
+    npcs: sourcebook.npcs.map(({ name, sourceBook, sourceId, pageRef }) => ({ name, sourceBook, sourceId, pageRef })),
+    items: sourcebook.items.map(({ name, sourceBook, sourceId, pageRef }) => ({ name, sourceBook, sourceId, pageRef })),
+    spells: sourcebook.spells.map(({ name, sourceBook, sourceId, pageRef }) => ({ name, sourceBook, sourceId, pageRef })),
+    traps: sourcebook.traps.map(({ name, sourceBook, sourceId, pageRef }) => ({ name, sourceBook, sourceId, pageRef })),
+  };
+  return JSON.stringify({ schemaVersion: SCHEMA_VERSION, exportedAt: new Date().toISOString(), references }, null, 2);
+}
+
+export function exportPdfLibrary(pdfLibrary: ImportedPdf[]): string {
+  const safeExport = pdfLibrary.map((pdf) => ({
+    id: pdf.id,
+    fileName: pdf.fileName,
+    fileHash: pdf.fileHash,
+    sourceBook: pdf.sourceBook,
+    importDate: pdf.importDate,
+    pageCount: pdf.pageCount,
+    title: pdf.title,
+    indexedStatus: pdf.indexedStatus,
+    lastIndexedAt: pdf.lastIndexedAt,
+    indexEntries: pdf.indexEntries,
+  }));
+  return JSON.stringify({ schemaVersion: SCHEMA_VERSION, exportedAt: new Date().toISOString(), pdfLibrary: safeExport }, null, 2);
 }
 
 export function exportCharacters(characters: Character[]): string {
