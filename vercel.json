@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm --dir artifacts/canon-table-engine run build",
+  "outputDirectory": "artifacts/canon-table-engine/dist/public",
+  "rewrites": [
+    {
+      "source": "/health",
+      "destination": "/health.json"
+    },
+    {
+      "source": "^/(.*)$",
+      "destination": "/index.html"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "ok": true,
+  "app": "Canon Table Engine",
+  "deployment": "static-vite",
+  "runtime": "browser",
+  "serverlessApiRequired": false
+}

@@ -31,6 +31,23 @@ pnpm run build
 - Build output: `artifacts/canon-table-engine/dist/public`
 - Docs: `docs/README.md`
 
+## Vercel Deployment
+
+This project deploys as a static Vite app, not as the Express API package.
+ 
+Use the committed root `vercel.json`, or set the Vercel project settings to:
+ 
+- Framework Preset: Vite
+- Root Directory: repository root
+- Install Command: `pnpm install`
+- Build Command: `pnpm --dir artifacts/canon-table-engine run build`
+- Output Directory: `artifacts/canon-table-engine/dist/public`
+ 
+If the Vercel project is configured with `artifacts/canon-table-engine` as its Root Directory instead, use:
+- Output Directory: `dist/public`
+
+The deployed site should serve `/` as static HTML and `/health` as a static health response. Do not point the Vercel homepage at `artifacts/api-server`; that package expects a long-running server environment and is not required for the browser-local companion app.
+
 ## Notes
 
 - The app is designed as a local browser companion and stores data in browser storage.

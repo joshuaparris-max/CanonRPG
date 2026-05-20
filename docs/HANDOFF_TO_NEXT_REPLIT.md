@@ -55,8 +55,34 @@ If importing fails, check that the JSON file has `schemaVersion: "2.0.0"`. Futur
 - Source book enforcement: every sourcebook entry requires sourceBook, sourceId, pageRef
 - Canon audit: calculated client-side from localStorage data
 
+## Vercel Deployment Notes
+
+This repo should deploy as a static Vite app from `artifacts/canon-table-engine`.
+
+- Do not deploy `artifacts/api-server` as the homepage.
+- Root-level `vercel.json` now targets static output `artifacts/canon-table-engine/dist/public`.
+- Build command: `pnpm --dir artifacts/canon-table-engine run build`
+- Install command: `pnpm install`
+- Output directory: `artifacts/canon-table-engine/dist/public`
+- Health endpoint: `/health` rewrites to static `health.json`
+
 ## Known Issues / Sharp Edges
 
 - LocalStorage has a 5MB limit. Very large DM prep exports may approach this.
 - Clearing browser storage will lose all data — always export before clearing.
 - Ravnica content (GGR) must be explicitly enabled in campaign settings.
+
+## Vercel Deployment Notes
+
+The app is a static Vite deployment. The Express API package under `artifacts/api-server` is not required for the browser companion and should not own the Vercel homepage.
+
+The crash at `canon-rpg-api-server.vercel.app` was consistent with Vercel invoking the API/server package instead of serving the Vite static build. The API `src/index.ts` expects `PORT` and calls `app.listen`, which is a long-running server pattern and can crash in a Serverless Function context when `PORT` is absent.
+
+Expected Vercel settings from repo root:
+
+- Install Command: `pnpm install`
+- Build Command: `pnpm --filter @workspace/canon-table-engine run build`
+- Output Directory: `artifacts/canon-table-engine/dist/public`
+- Deployment type: static Vite app
+
+The root `vercel.json` encodes those settings and rewrites SPA routes to `index.html`. A static health file is available at `/health`.
