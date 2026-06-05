@@ -38,11 +38,22 @@ The project is configured for Vercel deployment using a `vercel.json` at the roo
 
 #### Vercel Project Settings:
 
-- **Framework Preset**: `Vite`
+- **Framework Preset**: `Other` (or `Vite`, but ensure Output Directory is overridden)
 - **Root Directory**: `.` (Repo root)
 - **Build Command**: `pnpm --filter @workspace/canon-table-engine run build`
-- **Output Directory**: `artifacts/canon-table-engine/dist/public`
+- **Output Directory**: `artifacts/canon-table-engine/dist/public` (CRITICAL: Ensure this matches exactly)
 - **Install Command**: `pnpm install --frozen-lockfile`
+
+> **Note**: If Vercel reports "No Output Directory named 'public' found", it means the Dashboard is overriding the `vercel.json` settings. Go to **Project Settings > Build & Development Settings** and manually set the **Output Directory** to `artifacts/canon-table-engine/dist/public`.
+
+### Recommended Vercel Setup (Sub-Project Method)
+
+For the most reliable deployment, set the **Root Directory** in Vercel to `artifacts/canon-table-engine`.
+
+- **Root Directory**: `artifacts/canon-table-engine`
+- **Build Command**: `pnpm run build`
+- **Output Directory**: `dist/public`
+- **Install Command**: `pnpm install --frozen-lockfile` (Vercel will correctly detect the workspace root)
 
 ### Environment Variables
 

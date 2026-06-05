@@ -40,11 +40,13 @@ This project is optimized for deployment on [Vercel](https://vercel.com).
 
 ### Vercel Project Settings
 
-- **Framework Preset**: `Vite`
+- **Framework Preset**: `Other`
 - **Root Directory**: `.`
 - **Build Command**: `pnpm --filter @workspace/canon-table-engine run build`
 - **Output Directory**: `artifacts/canon-table-engine/dist/public`
 - **Install Command**: `pnpm install --frozen-lockfile`
+
+> **IMPORTANT**: If your deployment fails with "No Output Directory named 'public' found", manually set the **Output Directory** in your Vercel Project Settings to `artifacts/canon-table-engine/dist/public`.
 
 ### Environment Variables
 
