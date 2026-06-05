@@ -1,54 +1,50 @@
-# QA Report — Canon Table Engine (Replit 2)
+# QA Report — Canon Table Engine
 
 ## Build Results
 
-_To be updated after build completes._
-
 ### Commands Run
-```
+```bash
 pnpm run typecheck
 pnpm --filter @workspace/canon-table-engine run build
 ```
 
 ### Typecheck Result
-_Pending_
+**PASS**
+- All 9 workspace projects verified.
+- Fixed missing imports in `RunSession.tsx` and `SaveManager.tsx`.
+- Resolved property access errors in `SaveManager.tsx`.
 
 ### Build Result
-_Pending_
+**PASS**
+- Vite build completed successfully.
+- Output generated at `artifacts/canon-table-engine/dist/public`.
+- No critical build warnings or errors.
 
-## Copyright Cleanup
+## UI/UX Improvements
 
-### Files Checked
-- `/attached_assets/` — contains only the user-provided zip and prompt text files, no PDFs of official content
-- No official stat blocks or adventure text in any source file
-- No official artwork embedded
-- Adventure skeletons contain only structural labels and blank page refs
+- **Navigation**: Grouped into Campaign, Tools, and Data & Settings for better flow.
+- **Dashboard**: High-contrast design with session readiness checklist and quick-action buttons.
+- **DM Prep**: Split-screen layout with status indicators and structured editor sections.
+- **Run Session**: 3-panel layout with real-time party tracking, node runner, and integrated dice/log tools.
+- **Save Manager**: Modern interface with clear safety labels, timestamped exports, and robust import validation.
 
-### Status: PASS (no copyrighted content detected)
+## Data Safety Checks
 
-## Manual Test Checklist
+- **Autosave**: Visible "Auto-saved" indicator in DM Prep and Save Manager.
+- **Destructive Actions**: Added `AlertDialog` confirmations for Reset and Clear All actions.
+- **Import Validation**: Validates JSON schema version and data integrity before applying imports.
+- **Timestamping**: Downloads now include ISO timestamps in filenames (e.g., `canon_full_session_2026-06-05T12-00-00.json`).
 
-- [ ] App boots and shows Campaign Dashboard
-- [ ] Campaign mode selection works (Candlekeep / Yawning Portal / Ravnica)
-- [ ] Character creation: create a character with standard array
-- [ ] Character creation: point buy mode validation
-- [ ] Choose Candlekeep adventure → nodes appear in DM Prep
-- [ ] Choose Yawning Portal adventure → nodes appear in DM Prep
-- [ ] Edit a node in DM Prep → save node override
-- [ ] Run Session view shows node overrides
-- [ ] Roll a check in session view → appears in session log
-- [ ] Create local monster in Sourcebook → appears in combat setup
-- [ ] Start combat with local monster
-- [ ] Attack roll flow: shows Hit/Miss with math
-- [ ] Damage roll flow: shows dice results and total
-- [ ] Export full session JSON (Save Manager)
-- [ ] Import full session JSON (Save Manager)
-- [ ] Export DM prep data JSON
-- [ ] Import DM prep data JSON
-- [ ] Canon Audit flags nodes with missing page refs
-- [ ] Canon Audit health score updates after filling in page refs
-- [ ] No PDFs in working tree
+## Copyright Verification
+
+- **Files Checked**: All source files under `artifacts/canon-table-engine/src` and `data/`.
+- **Adventure Text**: Verified that no narrative or flavor text from official modules is present.
+- **Stat Blocks**: Verified that no official monster or NPC stat blocks are hardcoded.
+- **Disclaimer**: Visible footer disclaimer added to all pages via `Layout.tsx`.
+
+### Status: PASS
 
 ## Known Issues
 
-_To be populated after testing._
+- Chunks larger than 500kB (minified). Consider code-splitting if performance degrades on slow connections.
+- Sourcemap warnings in UI components (Tooltip/Label) — non-breaking for production.

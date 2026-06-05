@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "public": true,
+  "buildCommand": "pnpm --filter @workspace/canon-table-engine run build",
+  "outputDirectory": "artifacts/canon-table-engine/dist/public",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

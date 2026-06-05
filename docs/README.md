@@ -2,58 +2,73 @@
 
 ## What Is This?
 
-Canon Table Engine (Canon Companion) is an unofficial DM reference tool for running official D&D 5e 2014 adventures at the table.
+Canon Table Engine is an unofficial DM companion for running official D&D 5e adventures you already own.
+It provides campaign structure, private note-taking, combat tracking, character management, and local session saving.
 
-It is **not** affiliated with or endorsed by Wizards of the Coast. You must own the sourcebooks to use this tool meaningfully.
+This app is not affiliated with or endorsed by Wizards of the Coast.
 
-## How to Run
+## How to Run Locally
 
-The app runs in your browser. All data is stored locally in localStorage.
+From the repository root:
 
-### Development (Replit)
-
-The workflow starts automatically. The app is available at the root preview URL.
-
-To run manually:
-```
+```bash
+pnpm install
 pnpm --filter @workspace/canon-table-engine run dev
 ```
 
+Then open the local Vite URL shown in the terminal.
+
+## How to Build
+
+```bash
+pnpm install
+pnpm --filter @workspace/canon-table-engine run build
+```
+
+## How to Deploy to Vercel
+
+Recommended Vercel settings:
+
+- Framework: `Vite`
+- Install command: `pnpm install --frozen-lockfile`
+- Build command: `pnpm --filter @workspace/canon-table-engine run build`
+- Output directory: `artifacts/canon-table-engine/dist/public`
+- Environment variable: `BASE_PATH=/` (optional; default is `/`)
+
+A `vercel.json` file is included in the repository root for monorepo deployment.
+
 ## What the App Does
 
-- **Campaign Dashboard**: Choose your campaign mode (Candlekeep / Yawning Portal / Ravnica)
-- **DM Prep**: Prepare adventure nodes with your own page references and private notes
-- **Run Session**: 3-panel session runner with party tracker, node runner, and dice tools
-- **Combat Tracker**: Full D&D 5e combat with initiative, HP, conditions, rolls, and a formatted log
-- **Characters**: PHB 2014 character creation and management
-- **Sourcebook Data Entry**: Private local forms for monsters, NPCs, items, spells, and traps
-- **Canon Audit**: Health score and copyright-safety checker
-- **Save Manager**: Export/import all data as JSON, generate session summaries
+- Campaign Dashboard with mode selection and adventure readiness
+- DM Prep with private notes, page references, and node structure
+- Run Session mode with party tracker, current node, dice tools, and session log
+- Combat Tracker with initiative order, HP, conditions, and logs
+- Character creation, editing, party management, export/import
+- Sourcebook data entry for monsters, NPCs, items, spells, traps, and locations
+- Canon Audit for copyright safety and session readiness checks
+- Save Manager with export/import, reset confirmation, and backup reminders
 
-## What Is Safe to Commit / Share
+## Local Browser Storage
 
-| Data | Safe to Share? |
-|------|---------------|
-| App source code | Yes |
-| Character JSON (no private notes) | Generally yes |
-| DM prep JSON | **No** — may contain notes from books you own |
-| Full session JSON | **No** — contains DM prep data |
-| Combat log | Generally yes |
-| Session summary (auto-generated) | Generally yes |
+The app stores all user data in browser localStorage under keys like:
 
-## Moving to a New Replit Account
+- `cte_session`
+- `cte_characters`
+- `cte_node_overrides`
+- `cte_sourcebook`
+- `cte_combat`
 
-1. Go to **Save Manager** in the app
-2. **Export Full Session JSON** → save the file locally
-3. **Export Characters JSON** → save the file locally
-4. Open the new Replit's Canon Table Engine app
-5. Go to **Save Manager** → **Import Full Session JSON**
-6. Go to **Save Manager** → **Import Characters JSON**
+Local data is not sent to any server.
 
-See `docs/HANDOFF_TO_NEXT_REPLIT.md` for full details.
+## Backup and Export
 
-## Copyright Notice
+Use Save Manager to export files with timestamped names.
+Full session exports include private DM prep and should be kept private.
+Character exports are safer to share if no private notes are included.
 
-This tool is unofficial and does not include any copyrighted material from Wizards of the Coast. Adventure skeletons are structural scaffolds only — empty node templates the DM populates using books they own.
+## Copyright Safety
 
-Not affiliated with or endorsed by Wizards of the Coast LLC. Dungeons & Dragons is a trademark of Wizards of the Coast.
+This app does not include copyrighted adventure text, stat blocks, or maps.
+Adventure skeletons are structural templates only. Users must own the relevant sourcebooks.
+
+For more on safe content and private data handling, see `docs/CANON_POLICY.md`.

@@ -58,8 +58,8 @@ export interface NodeOverride {
   linkedMonsters: string[];
   linkedItems: string[];
   linkedTraps: string[];
-  skillChecks: { attribute: string; dc: number; description: string }[];
-  savingThrows: { attribute: string; dc: number; description: string }[];
+  skillChecks: string[];
+  savingThrows: string[];
   encounterDifficulty: string;
   nextNodes: string[];
   completed: boolean;

@@ -167,12 +167,19 @@ ${session.dmNotes || "None."}
 `;
 }
 
-export function downloadFile(content: string, filename: string, mimeType = "application/json") {
-  const blob = new Blob([content], { type: mimeType });
+export function downloadFile(content: string, fileName: string, contentType = "application/json") {
+  const blob = new Blob([content], { type: contentType });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
+
+  // Add timestamp to filename
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const finalFileName = fileName.includes(".")
+    ? `${fileName.split(".")[0]}_${timestamp}.${fileName.split(".")[1]}`
+    : `${fileName}_${timestamp}`;
+
   a.href = url;
-  a.download = filename;
+  a.download = finalFileName;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
