@@ -5,6 +5,9 @@
   "outputDirectory": "artifacts/canon-table-engine/dist/public",
   "installCommand": "pnpm install --frozen-lockfile",
   "framework": "vite",
+  "env": {
+    "BASE_PATH": "/"
+  },
   "rewrites": [
     {
       "source": "/(.*)",
