@@ -276,3 +276,36 @@
     inset: -1px;
   }
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-summary,
+  .print-summary * {
+    visibility: visible;
+  }
+
+  .print-summary {
+    position: absolute;
+    inset: 0;
+    max-width: none;
+    padding: 0;
+    color: #111;
+  }
+
+  .print-hidden {
+    display: none !important;
+  }
+
+  .print-card,
+  .print-card pre {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: #fff !important;
+    color: #111 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}

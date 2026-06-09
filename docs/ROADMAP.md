@@ -81,5 +81,5 @@
 - [x] Footer disclaimer
 - [x] Responsive layout (tablet/laptop)
 - [ ] Dice roll animation (Replit 3)
-- [ ] Print-friendly session summary (Replit 3)
+- [x] Print-friendly session summary (Codex)
 - [ ] Offline PWA support (Replit 3)

@@ -6,7 +6,7 @@ import { getAdventure } from "@/data/adventureSkeletons";
 import { generateSessionSummary, downloadFile } from "@/lib/sessionExport";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, RefreshCw } from "lucide-react";
+import { Download, Printer, RefreshCw } from "lucide-react";
 
 export default function SessionSummary() {
   const { session } = useSession();
@@ -52,13 +52,13 @@ export default function SessionSummary() {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto space-y-4">
+    <div className="print-summary p-6 max-w-3xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-serif text-2xl text-primary">Session Summary</h1>
           <p className="text-sm text-muted-foreground mt-1">Auto-generated from your current session state.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="print-hidden flex gap-2">
           <Button size="sm" variant="outline" onClick={regenerate} data-testid="button-regenerate-summary">
             <RefreshCw size={13} className="mr-1" /> Regenerate
           </Button>
@@ -68,10 +68,13 @@ export default function SessionSummary() {
           <Button size="sm" variant="outline" onClick={exportJson} data-testid="button-export-json">
             <Download size={13} className="mr-1" /> Export JSON
           </Button>
+          <Button size="sm" variant="outline" onClick={() => window.print()} data-testid="button-print-summary">
+            <Printer size={13} className="mr-1" /> Print
+          </Button>
         </div>
       </div>
 
-      <Card>
+      <Card className="print-card">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm font-serif">Summary Preview</CardTitle>
