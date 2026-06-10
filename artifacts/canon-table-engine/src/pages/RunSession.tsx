@@ -96,6 +96,21 @@ export default function RunSession() {
     );
   };
 
+  const shortRest = (charId: string, recoveredHp: number) => {
+    setCharacters((prev) =>
+      prev.map((c) => {
+        if (c.id !== charId) return c;
+        const newHp = Math.min(c.maxHp, c.currentHp + recoveredHp);
+        appendLog(`${c.name}: Short Rest — Recovered ${recoveredHp} HP (Total: ${newHp}/${c.maxHp})`);
+        
+        // Recover warlock-style slots if we wanted to be clever, but 
+        // for now just provide a manual reset button in the UI or reset 
+        // nothing but HP for short rest.
+        return { ...c, currentHp: newHp };
+      })
+    );
+  };
+
   const markComplete = () => {
     if (!session.currentNodeId) return;
     setNodeOverrides((prev) => ({
@@ -161,6 +176,7 @@ export default function RunSession() {
                     onHpChange={updateCharacterHp} 
                     onConditionToggle={toggleCondition} 
                     onLongRest={longRest} 
+                    onShortRest={shortRest}
                   />
                 ))
               )}
@@ -402,12 +418,14 @@ function CharacterCard({
   char, 
   onHpChange, 
   onConditionToggle, 
-  onLongRest 
+  onLongRest,
+  onShortRest 
 }: { 
   char: Character; 
   onHpChange: (id: string, delta: number) => void; 
   onConditionToggle: (id: string, condition: string) => void; 
   onLongRest: (id: string) => void; 
+  onShortRest: (id: string, hp: number) => void;
 }) {
   const [hpInput, setHpInput] = useState("");
   const hpPercent = Math.max(0, Math.min(100, (char.currentHp / char.maxHp) * 100));
@@ -500,14 +518,28 @@ function CharacterCard({
         </div>
       )}
 
-      <Button
-        size="sm"
-        variant="ghost"
-        className="w-full h-7 text-[9px] uppercase tracking-widest font-bold text-muted-foreground hover:text-primary"
-        onClick={() => onLongRest(char.id)}
-      >
-        <Clock size={10} className="mr-2" /> Long Rest
-      </Button>
+      <div className="flex gap-1">
+        <Button
+          size="sm"
+          variant="ghost"
+          className="flex-1 h-7 text-[9px] uppercase tracking-widest font-bold text-muted-foreground hover:text-primary"
+          onClick={() => {
+            const val = parseInt(hpInput) || 0;
+            onShortRest(char.id, val);
+            setHpInput("");
+          }}
+        >
+          <Zap size={10} className="mr-2" /> Short Rest
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="flex-1 h-7 text-[9px] uppercase tracking-widest font-bold text-muted-foreground hover:text-primary"
+          onClick={() => onLongRest(char.id)}
+        >
+          <Clock size={10} className="mr-2" /> Long Rest
+        </Button>
+      </div>
     </div>
   );
 }

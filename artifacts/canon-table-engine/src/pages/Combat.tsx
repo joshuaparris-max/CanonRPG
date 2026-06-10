@@ -474,7 +474,36 @@ export default function Combat() {
             <CardHeader className="pb-1">
               <CardTitle className="text-sm font-serif">Combat Log</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-2">
+              <div className="flex gap-2">
+                <Input
+                  className="h-8 text-xs"
+                  placeholder="Custom log entry..."
+                  id="custom-log-input"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const input = e.currentTarget;
+                      if (input.value.trim()) {
+                        logEntry(input.value.trim());
+                        input.value = '';
+                      }
+                    }
+                  }}
+                />
+                <Button 
+                  size="sm" 
+                  className="h-8 text-xs px-3"
+                  onClick={() => {
+                    const input = document.getElementById('custom-log-input') as HTMLInputElement;
+                    if (input.value.trim()) {
+                      logEntry(input.value.trim());
+                      input.value = '';
+                    }
+                  }}
+                >
+                  Log
+                </Button>
+              </div>
               <div className="bg-muted rounded p-2 h-64 overflow-y-auto text-xs font-mono space-y-0.5">
                 {[...combat.log].reverse().map((line, i) => (
                   <div key={i} className="text-muted-foreground">{line}</div>
