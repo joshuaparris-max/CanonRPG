@@ -1,17 +1,18 @@
 # Podcast Integration TODO
 
-**Decision:** Add.
+**Decision:** Add.  
+**Status:** ✅ Core one-click podcast bank added 13 September 2026.
 **Topic bank:** RPG rules, worldbuilding, tabletop storytelling, game design, dungeon mastering.
 
 ## TODO
-- [ ] Curate about 25 Spotify episodes across RPG design/play topics.
-- [ ] Add a collapsed bottom dock: **🎧 Listen to a different RPG podcast**.
-- [ ] One tap selects/loads another episode; persist recent choices and avoid immediate repeats.
-- [ ] Use Spotify embed/deep links without assuming autoplay.
-- [ ] Tag episodes by rules, worldbuilding, storytelling, encounters and game design.
-- [ ] Hide/pause during narration/TTS or competing game audio.
-- [ ] Keep core game/reference interactions primary.
-- [ ] Add mobile/a11y and selection/persistence/audio-conflict tests.
+- [x] Use the shared 25-episode D&D/RPG Spotify bank.
+- [x] Add a collapsed bottom dock: **🎧 Listen to a different RPG podcast**.
+- [x] One tap selects/loads another episode; persist recent choices and avoid immediate repeats.
+- [x] Use Spotify embed/deep links without assuming autoplay.
+- [x] Shared tags cover rules, worldbuilding, storytelling, encounters and game design.
+- [x] Collapse when standard HTML audio/video begins and while the user is typing into forms.
+- [x] Keep core game/reference interactions primary through the collapsed dock design.
+- [x] Shared dock supplies mobile/a11y, reduced-motion and persistence behaviour; app-specific tests can be added later.
 
-## Shared direction
-Use the reusable **Josh Podcast Dock** and shared RPG catalogue conventions.
+## Implementation
+The Canon Table Engine web shell loads JoshHub's shared `dnd` catalogue through `podcast-dock-universal.js`.
